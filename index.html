@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gold Price Calculator</title>
+
+<style>
+    /* THEME VARIABLES */
+    :root {
+        --gold1: #f7d47d;
+        --gold2: #c59c35;
+        --card-bg: #fff9e6;
+        --text: #3d2b00;
+        --bg: #ffffff;
+        --button-bg: linear-gradient(90deg, #ffdd71, #d9a524);
+        --button-text: #3a2a00;
+        --shadow: rgba(0,0,0,0.15);
+    }
+
+    /* DARK THEME */
+    .dark {
+        --bg: #121212;
+        --card-bg: #1c1c1c;
+        --text: #ffe9b1;
+        --button-bg: linear-gradient(90deg, #c99b32, #7a5c14);
+        --shadow: rgba(255,255,255,0.2);
+    }
+
+    body {
+        font-family: "Poppins", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 15px;
+        transition: 0.3s;
+    }
+
+    .container {
+        max-width: 450px;
+        margin: auto;
+        padding: 20px;
+        border-radius: 14px;
+        background: var(--card-bg);
+        box-shadow: 0 0 12px var(--shadow);
+        border: 2px solid var(--gold2);
+    }
+
+    h2 {
+        text-align: center;
+        background: linear-gradient(90deg, var(--gold2), var(--gold1));
+        -webkit-background-clip: text;
+        color: transparent;
+        margin-top: 0;
+    }
+
+    label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 6px;
+        border: 1px solid var(--gold2);
+        background: #fffdfa;
+        font-size: 16px;
+        color: var(--text);
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        background: var(--button-bg);
+        color: var(--button-text);
+        font-size: 18px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        box-shadow: 0 0 5px var(--gold2);
+    }
+
+    .theme-toggle {
+        margin: auto;
+        display: block;
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 6px;
+        border: none;
+        background: var(--button-bg);
+        color: var(--button-text);
+        cursor: pointer;
+        font-weight: bold;
+        width: 200px;
+        box-shadow: 0 0 4px var(--gold2);
+    }
+
+    .result-card {
+        background: var(--card-bg);
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 6px;
+        border: 1px solid var(--gold2);
+        box-shadow: 0 0 6px var(--shadow);
+    }
+
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()">🌙 Toggle Dark / Light</button>
+
+<div class="container">
+    <h2>Gold Price Calculator</h2>
+
+    <label>Gold Price (per gram)</label>
+    <input type="number" id="goldPrice">
+
+    <label>Gram</label>
+    <input type="number" id="gram">
+
+    <label>Wastage %</label>
+    <input type="number" id="wastage">
+
+    <label>GST %</label>
+    <input type="number" id="gst">
+
+    <button onclick="calculateGold()">Calculate Total</button>
+
+    <div id="result" class="result-card" style="display:none;"></div>
+</div>
+
+<script>
+// Load saved inputs
+window.onload = function () {
+    document.getElementById("goldPrice").value = localStorage.getItem("goldPrice") || "";
+    document.getElementById("gram").value = localStorage.getItem("gram") || "";
+    document.getElementById("wastage").value = localStorage.getItem("wastage") || "";
+    document.getElementById("gst").value = localStorage.getItem("gst") || "";
+};
+
+function calculateGold() {
+    let goldPrice = parseFloat(document.getElementById("goldPrice").value);
+    let gram = parseFloat(document.getElementById("gram").value);
+    let wastage = parseFloat(document.getElementById("wastage").value);
+    let gst = parseFloat(document.getElementById("gst").value);
+
+    // Save inputs
+    localStorage.setItem("goldPrice", goldPrice);
+    localStorage.setItem("gram", gram);
+    localStorage.setItem("wastage", wastage);
+    localStorage.setItem("gst", gst);
+
+    // Calculations
+    let basePrice = goldPrice * gram;
+    let wastageAmt = basePrice * (wastage / 100);
+    let tempPrice = basePrice + wastageAmt;
+    let gstAmt = tempPrice * (gst / 100);
+    let finalPrice = tempPrice + gstAmt;
+
+    document.getElementById("result").style.display = "block";
+    document.getElementById("result").innerHTML = `
+        <h3>Calculation Breakdown</h3>
+        <p><b>Gold × Gram:</b> ₹${basePrice.toFixed(2)}</p>
+        <p><b>Wastage Amount:</b> ₹${wastageAmt.toFixed(2)}</p>
+        <p><b>GST Amount:</b> ₹${gstAmt.toFixed(2)}</p>
+        <hr>
+        <h2>Total: ₹${finalPrice.toFixed(2)}</h2>
+    `;
+}
+
+// Theme toggle
+function toggleTheme() {
+    document.body.classList.toggle("dark");
+}
+</script>
+
+</body>
+</html>
